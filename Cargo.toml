@@ -1,0 +1,5 @@
+[package]
+
+name = "natural_sort"
+version = "0.0.1"
+authors = ["Ulysse Carion <ulysse@ulysse.io>"]
