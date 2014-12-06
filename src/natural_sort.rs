@@ -21,12 +21,12 @@ impl NumberSequence {
             let numbers_match = numbers_re.find(to_parse.as_slice());
 
             let (next_token, next_to_parse) = if numbers_match.is_some() {
-                let (_, end_index) = numbers_match.unwrap();
-                NumberSequence::process_number(end_index, to_parse)
+                NumberSequence::process_number(
+                    numbers_match.unwrap(), to_parse)
             } else {
                 let letters_match = letters_re.find(to_parse.as_slice());
-                let (_, end_index) = letters_match.unwrap();
-                NumberSequence::process_letters(end_index, to_parse)
+                NumberSequence::process_letters(
+                    letters_match.unwrap(), to_parse)
             };
 
             elems.push(next_token);
@@ -36,8 +36,9 @@ impl NumberSequence {
         NumberSequence { elems: elems }
     }
 
-    fn process_number(end_index: uint,
+    fn process_number(regex_match: (uint, uint),
                       to_parse: String) -> (StringElem, String) {
+        let (_, end_index) = regex_match;
         let prefix_to_num: int = from_str(to_parse.slice_to(end_index))
                                     .unwrap();
 
@@ -47,8 +48,9 @@ impl NumberSequence {
         (next_token, to_parse_suffix)
     }
 
-    fn process_letters(end_index: uint,
+    fn process_letters(regex_match: (uint, uint),
                        to_parse: String) -> (StringElem, String) {
+        let (_, end_index) = regex_match;
         let prefix = to_parse.slice_to(end_index);
 
         let next_token = StringElem::Letters(prefix.to_string());
