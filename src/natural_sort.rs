@@ -5,7 +5,7 @@ enum StringElem {
 }
 
 #[deriving(Show, PartialEq, Eq)]
-struct NumberSequence {
+pub struct NumberSequence {
     elems: Vec<StringElem>
 }
 
@@ -22,11 +22,11 @@ impl NumberSequence {
 
             let (next_token, next_to_parse) = if numbers_match.is_some() {
                 let (_, end_index) = numbers_match.unwrap();
-                process_number(end_index, to_parse, &elems)
+                NumberSequence::process_number(end_index, to_parse)
             } else {
                 let letters_match = letters_re.find(to_parse.as_slice());
                 let (_, end_index) = letters_match.unwrap();
-                process_letters(end_index, to_parse, &elems)
+                NumberSequence::process_letters(end_index, to_parse)
             };
 
             elems.push(next_token);
@@ -36,30 +36,28 @@ impl NumberSequence {
         NumberSequence { elems: elems }
     }
 
+    fn process_number(end_index: uint,
+                      to_parse: String) -> (StringElem, String) {
+        let prefix_to_num: int = from_str(to_parse.slice_to(end_index))
+                                    .unwrap();
+
+        let next_token = StringElem::Number(prefix_to_num);
+        let to_parse_suffix = to_parse.slice_from(end_index).to_string();
+
+        (next_token, to_parse_suffix)
+    }
+
+    fn process_letters(end_index: uint,
+                       to_parse: String) -> (StringElem, String) {
+        let prefix = to_parse.slice_to(end_index);
+
+        let next_token = StringElem::Letters(prefix.to_string());
+        let to_parse_suffix = to_parse.slice_from(end_index).to_string();
+
+        (next_token, to_parse_suffix)
+    }
 }
 
-fn process_number(end_index: uint,
-                  to_parse: String,
-                  elems: &Vec<StringElem>) -> (StringElem, String) {
-    let prefix_to_num: int = from_str(to_parse.slice_to(end_index))
-                                .unwrap();
-
-    let next_token = StringElem::Number(prefix_to_num);
-    let to_parse_suffix = to_parse.slice_from(end_index).to_string();
-
-    (next_token, to_parse_suffix)
-}
-
-fn process_letters(end_index: uint,
-                   to_parse: String,
-                   elems: &Vec<StringElem>) -> (StringElem, String) {
-    let prefix = to_parse.slice_to(end_index);
-
-    let next_token = StringElem::Letters(prefix.to_string());
-    let to_parse_suffix = to_parse.slice_from(end_index).to_string();
-
-    (next_token, to_parse_suffix)
-}
 
 #[test]
 fn test_makes_numseq() {
