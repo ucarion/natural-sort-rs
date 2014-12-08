@@ -26,10 +26,12 @@ impl PartialOrd for NumberSequence {
             }
         );
 
-        for ordering in compares {
-            if ordering.is_none() ||
-                    (ordering.is_some() && ordering.unwrap() != Equal) {
-                return ordering
+        for comparison in compares {
+            match comparison {
+                None => { return None; }
+                Some(Less) => { return Some(Less); }
+                Some(Greater) => { return Some(Greater); }
+                _ => { }
             }
         }
 
