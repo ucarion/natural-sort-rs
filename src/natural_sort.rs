@@ -73,10 +73,12 @@ fn test_makes_numseq() {
     };
     assert_eq!(NumberSequence::from_str(str2), seq2);
 
-    let str3 = "abc123";
+    let str3 = "abc123xyz456";
     let seq3 = NumberSequence {
         elems: vec![StringElem::Letters("abc".to_string()),
-                    StringElem::Number(123)]
+                    StringElem::Number(123),
+                    StringElem::Letters("xyz".to_string()),
+                    StringElem::Number(456)]
     };
     assert_eq!(NumberSequence::from_str(str3), seq3);
 }
