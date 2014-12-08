@@ -9,6 +9,34 @@ pub struct NumberSequence {
     elems: Vec<StringElem>
 }
 
+impl PartialOrd for NumberSequence {
+    fn partial_cmp(&self, other: &NumberSequence) -> Option<Ordering> {
+        let pairs = self.elems.iter().zip(other.elems.iter());
+        let mut compares = pairs.map(|pair|
+            match pair {
+                (&StringElem::Number(a), &StringElem::Number(b)) => {
+                    a.partial_cmp(&b)
+                },
+
+                (&StringElem::Letters(ref a), &StringElem::Letters(ref b)) => {
+                    a.partial_cmp(b)
+                },
+
+                _ => { None }
+            }
+        );
+
+        for ordering in compares {
+            if ordering.is_none() ||
+                    (ordering.is_some() && ordering.unwrap() != Equal) {
+                return ordering
+            }
+        }
+
+        self.elems.len().partial_cmp(&other.elems.len())
+    }
+}
+
 impl NumberSequence {
     pub fn from_str(string: &str) -> NumberSequence {
         let numbers_re = regex!(r"^\p{N}+");
@@ -81,4 +109,29 @@ fn test_makes_numseq() {
                     StringElem::Number(456)]
     };
     assert_eq!(NumberSequence::from_str(str3), seq3);
+}
+
+#[test]
+fn test_compares_numseq() {
+    fn compare_numseq(str1: &str, str2: &str) -> Option<Ordering> {
+        NumberSequence::from_str(str1).partial_cmp(
+            &NumberSequence::from_str(str2))
+    }
+
+    assert_eq!(compare_numseq("aaa", "aaa"), Some(Equal));
+    assert_eq!(compare_numseq("aaa", "aab"), Some(Less));
+    assert_eq!(compare_numseq("aab", "aaa"), Some(Greater));
+    assert_eq!(compare_numseq("aaa", "aa"), Some(Greater));
+
+    assert_eq!(compare_numseq("111", "111"), Some(Equal));
+    assert_eq!(compare_numseq("111", "112"), Some(Less));
+    assert_eq!(compare_numseq("112", "111"), Some(Greater));
+
+    assert_eq!(compare_numseq("a1", "a1"), Some(Equal));
+    assert_eq!(compare_numseq("a1", "a2"), Some(Less));
+    assert_eq!(compare_numseq("a2", "a1"), Some(Greater));
+
+    assert_eq!(compare_numseq("1a2", "1b1"), Some(Less));
+
+    assert_eq!(compare_numseq("1", "a"), None);
 }
