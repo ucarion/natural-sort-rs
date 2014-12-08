@@ -5,12 +5,12 @@ enum StringElem {
 }
 
 #[deriving(Show, PartialEq, Eq)]
-pub struct NumberSequence {
+pub struct HumanString {
     elems: Vec<StringElem>
 }
 
-impl PartialOrd for NumberSequence {
-    fn partial_cmp(&self, other: &NumberSequence) -> Option<Ordering> {
+impl PartialOrd for HumanString {
+    fn partial_cmp(&self, other: &HumanString) -> Option<Ordering> {
         let pairs = self.elems.iter().zip(other.elems.iter());
         let mut compares = pairs.map(|pair|
             match pair {
@@ -39,8 +39,8 @@ impl PartialOrd for NumberSequence {
     }
 }
 
-impl NumberSequence {
-    pub fn from_str(string: &str) -> NumberSequence {
+impl HumanString {
+    pub fn from_str(string: &str) -> HumanString {
         let numbers_re = regex!(r"^\p{N}+");
         let letters_re = regex!(r"^\P{N}+");
 
@@ -51,19 +51,19 @@ impl NumberSequence {
             let numbers_match = numbers_re.find(to_parse.as_slice());
 
             let (next_token, next_to_parse) = if numbers_match.is_some() {
-                NumberSequence::process_number(
+                HumanString::process_number(
                     numbers_match.unwrap(), to_parse)
             } else {
                 let letters_match = letters_re.find(to_parse.as_slice());
-                NumberSequence::process_letters(
-                    letters_match.unwrap(), to_parse)
+                HumanString::process_letters(
+                   letters_match.unwrap(), to_parse)
             };
 
             elems.push(next_token);
             to_parse = next_to_parse;
         }
 
-        NumberSequence { elems: elems }
+        HumanString { elems: elems }
     }
 
     fn process_number(regex_match: (uint, uint),
@@ -92,8 +92,8 @@ impl NumberSequence {
 
 pub fn natural_sort(strs: &mut [&str]) {
     fn sort_fn(a: &&str, b: &&str) -> Ordering {
-        let seq_a = NumberSequence::from_str(*a);
-        let seq_b = NumberSequence::from_str(*b);
+        let seq_a = HumanString::from_str(*a);
+        let seq_b = HumanString::from_str(*b);
 
         seq_a.partial_cmp(&seq_b).unwrap()
     }
@@ -104,30 +104,30 @@ pub fn natural_sort(strs: &mut [&str]) {
 #[test]
 fn test_makes_numseq() {
     let str1 = "123";
-    let seq1 = NumberSequence { elems: vec![StringElem::Number(123)] };
-    assert_eq!(NumberSequence::from_str(str1), seq1);
+    let hstr1 = HumanString { elems: vec![StringElem::Number(123)] };
+    assert_eq!(HumanString::from_str(str1), hstr1);
 
     let str2 = "abc";
-    let seq2 = NumberSequence {
+    let hstr2 = HumanString {
         elems: vec![StringElem::Letters("abc".to_string())]
     };
-    assert_eq!(NumberSequence::from_str(str2), seq2);
+    assert_eq!(HumanString::from_str(str2), hstr2);
 
     let str3 = "abc123xyz456";
-    let seq3 = NumberSequence {
+    let hstr3 = HumanString {
         elems: vec![StringElem::Letters("abc".to_string()),
                     StringElem::Number(123),
                     StringElem::Letters("xyz".to_string()),
                     StringElem::Number(456)]
     };
-    assert_eq!(NumberSequence::from_str(str3), seq3);
+    assert_eq!(HumanString::from_str(str3), hstr3);
 }
 
 #[test]
 fn test_compares_numseq() {
     fn compare_numseq(str1: &str, str2: &str) -> Option<Ordering> {
-        NumberSequence::from_str(str1).partial_cmp(
-            &NumberSequence::from_str(str2))
+        HumanString::from_str(str1).partial_cmp(
+            &HumanString::from_str(str2))
     }
 
     assert_eq!(compare_numseq("aaa", "aaa"), Some(Equal));
