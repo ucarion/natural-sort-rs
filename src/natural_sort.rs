@@ -90,6 +90,16 @@ impl NumberSequence {
     }
 }
 
+pub fn natural_sort(strs: &mut [&str]) {
+    fn sort_fn(a: &&str, b: &&str) -> Ordering {
+        let seq_a = NumberSequence::from_str(*a);
+        let seq_b = NumberSequence::from_str(*b);
+
+        seq_a.partial_cmp(&seq_b).unwrap()
+    }
+
+    strs.sort_by(sort_fn);
+}
 
 #[test]
 fn test_makes_numseq() {
@@ -136,4 +146,12 @@ fn test_compares_numseq() {
     assert_eq!(compare_numseq("1a2", "1b1"), Some(Less));
 
     assert_eq!(compare_numseq("1", "a"), None);
+}
+
+#[test]
+fn test_natural_sort() {
+    let mut files = ["file1.txt", "file11.txt", "file2.txt"];
+    natural_sort(&mut files);
+
+    assert_eq!(files, ["file1.txt", "file2.txt", "file11.txt"]);
 }
