@@ -36,6 +36,8 @@ impl PartialOrd for HumanString {
     /// assert_eq!(a.partial_cmp(&b), None);
     /// ```
     fn partial_cmp(&self, other: &HumanString) -> Option<Ordering> {
+        // First, create a list of Option<Ordering>s. If there's a type
+        // mismatch, have the comparison resolve to `None`.
         let pairs = self.elems.iter().zip(other.elems.iter());
         let mut compares = pairs.map(|pair|
             match pair {
@@ -51,15 +53,17 @@ impl PartialOrd for HumanString {
             }
         );
 
+        // The first time we run into anything that isn't just Some(Equal),
+        // return it.
         for comparison in compares {
             match comparison {
-                None => { return None; }
-                Some(Less) => { return Some(Less); }
-                Some(Greater) => { return Some(Greater); }
-                _ => { }
+                Some(Equal) => { },
+                nonequal @ _ => { return nonequal; }
             }
         }
 
+        // If we're still here, then all comparisons resulted in Some(Equal). We
+        // then fall back to comparing the length of the two strings' elems.
         self.elems.len().partial_cmp(&other.elems.len())
     }
 }
