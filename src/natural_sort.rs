@@ -4,12 +4,37 @@ enum StringElem {
     Number(int)
 }
 
+/// A `HumanString` is a sort of string-like object that can be compared in a
+/// human-friendly way.
 #[deriving(Show, PartialEq, Eq)]
 pub struct HumanString {
     elems: Vec<StringElem>
 }
 
 impl PartialOrd for HumanString {
+    /// `HumanString`s are ordered based on their sub-components (a
+    /// `HumanString` is represented as a sequence of numbers and strings). If
+    /// two strings have analogous components, then they can be compared:
+    ///
+    /// ```
+    /// use natural_sort::HumanString;
+    ///
+    /// assert!(HumanString::from_str("a1a") < HumanString::from_str("a1b"));
+    /// assert!(HumanString::from_str("a11") > HumanString::from_str("a2"));
+    /// ```
+    ///
+    /// However, `HumanString`s cannot always be compared. If the components of
+    /// two strings do not match before a difference is found, then no
+    /// comparison can be made:
+    ///
+    /// ```
+    /// use natural_sort::HumanString;
+    ///
+    /// let a = HumanString::from_str("123");
+    /// let b = HumanString::from_str("abc");
+    ///
+    /// assert_eq!(a.partial_cmp(&b), None);
+    /// ```
     fn partial_cmp(&self, other: &HumanString) -> Option<Ordering> {
         let pairs = self.elems.iter().zip(other.elems.iter());
         let mut compares = pairs.map(|pair|
@@ -40,6 +65,7 @@ impl PartialOrd for HumanString {
 }
 
 impl HumanString {
+    /// Constructs a `HumanString` from a `&str`.
     pub fn from_str(string: &str) -> HumanString {
         let numbers_re = regex!(r"^\p{N}+");
         let letters_re = regex!(r"^\P{N}+");
@@ -90,6 +116,16 @@ impl HumanString {
     }
 }
 
+/// A utility function for sorting a list of strings using human sorting.
+///
+/// ```
+/// use natural_sort::natural_sort;
+///
+/// let mut files = ["file1.txt", "file11.txt", "file2.txt"];
+/// natural_sort(&mut files);
+///
+/// assert_eq!(files, ["file1.txt", "file2.txt", "file11.txt"]);
+/// ```
 pub fn natural_sort(strs: &mut [&str]) {
     fn sort_fn(a: &&str, b: &&str) -> Ordering {
         let seq_a = HumanString::from_str(*a);
