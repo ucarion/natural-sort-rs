@@ -10,7 +10,7 @@ sorting", (also known as "human sorting").
 
 With normal string-based searching, strings are always compared alphabetically:
 
-```
+```rust
 let mut files = ["file2.txt", "file11.txt", "file1.txt"];
 files.sort();
 
@@ -22,7 +22,7 @@ assert_eq!(files, ["file1.txt", "file11.txt", "file2.txt"]);
 This crate provides a function `natural_sort` which will order strings
 numerically when doing so makes sense:
 
-```
+```rust
 use natural_sort::natural_sort;
 
 let mut files = ["file1.txt", "file11.txt", "file2.txt"];
