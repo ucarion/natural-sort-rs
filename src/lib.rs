@@ -4,9 +4,6 @@
 extern crate regex_macros;
 extern crate regex;
 
-pub mod natural_sort;
+pub use natural_sort::natural_sort;
 
-#[test]
-fn test() {
-    assert!(true);
-}
+pub mod natural_sort;
