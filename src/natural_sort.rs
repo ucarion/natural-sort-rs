@@ -1,4 +1,8 @@
-#[deriving(Show, PartialEq, Eq)]
+use std::cmp::Ordering;
+use std::cmp::Ordering::*;
+use std::str::FromStr;
+
+#[derive(Show, PartialEq, Eq)]
 enum StringElem {
     Letters(String),
     Number(int)
@@ -6,7 +10,7 @@ enum StringElem {
 
 /// A `HumanString` is a sort of string-like object that can be compared in a
 /// human-friendly way.
-#[deriving(Show, PartialEq, Eq)]
+#[derive(Show, PartialEq, Eq)]
 pub struct HumanString {
     elems: Vec<StringElem>
 }
@@ -99,7 +103,7 @@ impl HumanString {
     fn process_number(regex_match: (uint, uint),
                       to_parse: String) -> (StringElem, String) {
         let (_, end_index) = regex_match;
-        let prefix_to_num: int = from_str(to_parse.slice_to(end_index))
+        let prefix_to_num: int = FromStr::from_str(to_parse.slice_to(end_index))
                                     .unwrap();
 
         let next_token = StringElem::Number(prefix_to_num);
