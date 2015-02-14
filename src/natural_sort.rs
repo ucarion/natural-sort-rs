@@ -2,15 +2,15 @@ use std::cmp::Ordering;
 use std::cmp::Ordering::*;
 use std::str::FromStr;
 
-#[derive(Show, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 enum StringElem {
     Letters(String),
-    Number(int)
+    Number(i64)
 }
 
 /// A `HumanString` is a sort of string-like object that can be compared in a
 /// human-friendly way.
-#[derive(Show, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct HumanString {
     elems: Vec<StringElem>
 }
@@ -43,7 +43,7 @@ impl PartialOrd for HumanString {
         // First, create a list of Option<Ordering>s. If there's a type
         // mismatch, have the comparison resolve to `None`.
         let pairs = self.elems.iter().zip(other.elems.iter());
-        let mut compares = pairs.map(|pair|
+        let compares = pairs.map(|pair|
             match pair {
                 (&StringElem::Number(a), &StringElem::Number(b)) => {
                     a.partial_cmp(&b)
@@ -82,13 +82,13 @@ impl HumanString {
         let mut to_parse = String::from_str(string);
 
         while !to_parse.is_empty() {
-            let numbers_match = numbers_re.find(to_parse.as_slice());
+            let numbers_match = numbers_re.find(&to_parse[]);
 
             let (next_token, next_to_parse) = if numbers_match.is_some() {
                 HumanString::process_number(
                     numbers_match.unwrap(), to_parse)
             } else {
-                let letters_match = letters_re.find(to_parse.as_slice());
+                let letters_match = letters_re.find(&to_parse[]);
                 HumanString::process_letters(
                    letters_match.unwrap(), to_parse)
             };
@@ -100,25 +100,25 @@ impl HumanString {
         HumanString { elems: elems }
     }
 
-    fn process_number(regex_match: (uint, uint),
+    fn process_number(regex_match: (usize, usize),
                       to_parse: String) -> (StringElem, String) {
         let (_, end_index) = regex_match;
-        let prefix_to_num: int = FromStr::from_str(to_parse.slice_to(end_index))
+        let prefix_to_num: i64 = FromStr::from_str(&to_parse[..end_index])
                                     .unwrap();
 
         let next_token = StringElem::Number(prefix_to_num);
-        let to_parse_suffix = to_parse.slice_from(end_index).to_string();
+        let to_parse_suffix = to_parse[end_index..].to_string();
 
         (next_token, to_parse_suffix)
     }
 
-    fn process_letters(regex_match: (uint, uint),
+    fn process_letters(regex_match: (usize, usize),
                        to_parse: String) -> (StringElem, String) {
         let (_, end_index) = regex_match;
-        let prefix = to_parse.slice_to(end_index);
+        let prefix = &to_parse[..end_index];
 
         let next_token = StringElem::Letters(prefix.to_string());
-        let to_parse_suffix = to_parse.slice_from(end_index).to_string();
+        let to_parse_suffix = to_parse[end_index..].to_string();
 
         (next_token, to_parse_suffix)
     }
