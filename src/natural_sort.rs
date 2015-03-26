@@ -82,13 +82,13 @@ impl HumanString {
         let mut to_parse = String::from_str(string);
 
         while !to_parse.is_empty() {
-            let numbers_match = numbers_re.find(&to_parse[]);
+            let numbers_match = numbers_re.find(&to_parse[..]);
 
             let (next_token, next_to_parse) = if numbers_match.is_some() {
                 HumanString::process_number(
                     numbers_match.unwrap(), to_parse)
             } else {
-                let letters_match = letters_re.find(&to_parse[]);
+                let letters_match = letters_re.find(&to_parse[..]);
                 HumanString::process_letters(
                    letters_match.unwrap(), to_parse)
             };

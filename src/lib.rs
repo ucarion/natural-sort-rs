@@ -31,7 +31,7 @@
 //! Human-comparable strings can be created directly using
 //! `natural_sort::HumanString::from_str`.
 
-#![feature(plugin)]
+#![feature(plugin, collections)]
 
 #![plugin(regex_macros)]
 extern crate regex;
