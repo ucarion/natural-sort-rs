@@ -1,4 +1,4 @@
-# Natural-Sort
+# Natural-Sort ![Travis build status](https://travis-ci.org/ucarion/natural-sort-rs.svg?branch=master)
 
 A Rust library that implements "natural sorting" (aka "human sorting"). See
 Jeff Atwood's [Sorting for Humans: Natural Sort Order][1].
