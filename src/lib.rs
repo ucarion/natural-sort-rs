@@ -31,8 +31,6 @@
 //! Human-comparable strings can be created directly using
 //! `natural_sort::HumanString::from_str`.
 
-#![doc(html_root_url = "https://ucarion.github.io/natural-sort-rs/")]
-
 #![feature(plugin)]
 #![cfg(test)] #![feature(core)]
 
