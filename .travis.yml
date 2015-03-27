@@ -1,9 +1,0 @@
-language: rust
-env:
-  global:
-  - secure: G1SbkK+NZA5130606MHUtoqES8u7iHhHNCMBMxtNP8TcPLRqqKuYKttQOp+Ocew1gxikhJHUeavr1LlOn1YVMDrLUohdxv8jzAP4jzF6ckM+hh2gjWjA75/DIF+ut+/v7n2czgGKM0z/ZN5hZvJnQdEIjQhLg0VdqTZLnWxHF70=
-
-after_success: |
-  [ $TRAVIS_BRANCH = master ] &&
-  [ $TRAVIS_PULL_REQUEST = false ] &&
-  bash deploy.sh

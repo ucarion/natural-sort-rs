@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["natural_sort","A utility function for sorting a list of strings using human sorting."]],"struct":[["HumanString","A `HumanString` is a sort of string-like object that can be compared in a human-friendly way."]]});
