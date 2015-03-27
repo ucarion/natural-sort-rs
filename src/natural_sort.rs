@@ -1,11 +1,12 @@
 use std::cmp::Ordering;
 use std::cmp::Ordering::*;
 use std::str::FromStr;
+use num::bigint::BigInt;
 
 #[derive(Debug, PartialEq, Eq)]
 enum StringElem {
     Letters(String),
-    Number(i64)
+    Number(BigInt)
 }
 
 /// A `HumanString` is a sort of string-like object that can be compared in a
@@ -45,7 +46,7 @@ impl PartialOrd for HumanString {
         let pairs = self.elems.iter().zip(other.elems.iter());
         let compares = pairs.map(|pair|
             match pair {
-                (&StringElem::Number(a), &StringElem::Number(b)) => {
+                (&StringElem::Number(ref a), &StringElem::Number(ref b)) => {
                     a.partial_cmp(&b)
                 },
 
@@ -103,7 +104,7 @@ impl HumanString {
     fn process_number(regex_match: (usize, usize),
                       to_parse: String) -> (StringElem, String) {
         let (_, end_index) = regex_match;
-        let prefix_to_num: i64 = FromStr::from_str(&to_parse[..end_index])
+        let prefix_to_num: BigInt = FromStr::from_str(&to_parse[..end_index])
                                     .unwrap();
 
         let next_token = StringElem::Number(prefix_to_num);

@@ -36,6 +36,8 @@
 #![plugin(regex_macros)]
 extern crate regex;
 
+extern crate num;
+
 pub use natural_sort::natural_sort;
 pub use natural_sort::HumanString;
 

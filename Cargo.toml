@@ -10,3 +10,4 @@ license = "MIT"
 [dependencies]
 regex = "*"
 regex_macros = "*"
+num = "*"
