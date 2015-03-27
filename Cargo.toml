@@ -1,6 +1,6 @@
 [package]
 name = "natural_sort"
-version = "0.0.1"
+version = "1.0.0"
 authors = ["Ulysse Carion <ulysse@ulysse.io>"]
 description = "A library for natural sorting (aka human sorting)"
 homepage = "https://github.com/ucarion/natural-sort-rs"
