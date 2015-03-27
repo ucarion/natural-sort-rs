@@ -33,8 +33,8 @@
 
 #![doc(html_root_url = "https://ucarion.github.io/natural-sort-rs/")]
 
-#![feature(plugin, collections)]
-#![cfg_attr(test, feature(core))]
+#![feature(plugin)]
+#![cfg(test)] #![feature(core)]
 
 #![plugin(regex_macros)]
 extern crate regex;

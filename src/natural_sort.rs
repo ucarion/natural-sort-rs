@@ -6,19 +6,19 @@ use num::bigint::BigInt;
 #[cfg(test)] use std::num::FromPrimitive;
 
 #[derive(Debug, PartialEq, Eq)]
-enum StringElem {
-    Letters(String),
+enum StringElem<'a> {
+    Letters(&'a str),
     Number(BigInt)
 }
 
 /// A `HumanString` is a sort of string-like object that can be compared in a
 /// human-friendly way.
 #[derive(Debug, PartialEq, Eq)]
-pub struct HumanString {
-    elems: Vec<StringElem>
+pub struct HumanString<'a> {
+    elems: Vec<StringElem<'a>>
 }
 
-impl PartialOrd for HumanString {
+impl<'a> PartialOrd for HumanString<'a> {
     /// `HumanString`s are ordered based on their sub-components (a
     /// `HumanString` is represented as a sequence of numbers and strings). If
     /// two strings have analogous components, then they can be compared:
@@ -75,53 +75,53 @@ impl PartialOrd for HumanString {
     }
 }
 
-impl HumanString {
+impl<'a> HumanString<'a> {
     /// Constructs a `HumanString` from a `&str`.
     pub fn from_str(string: &str) -> HumanString {
-        let numbers_re = regex!(r"^[0-9]+");
-        let letters_re = regex!(r"^[^0-9]+");
-
         let mut elems = Vec::new();
-        let mut to_parse = String::from_str(string);
+        let mut to_parse = string;
 
         while !to_parse.is_empty() {
-            let numbers_match = numbers_re.find(&to_parse[..]);
+            let (next_elem, next_to_parse) = HumanString::process_token(to_parse);
 
-            let (next_token, next_to_parse) = if numbers_match.is_some() {
-                HumanString::process_number(
-                    numbers_match.unwrap(), to_parse)
-            } else {
-                let letters_match = letters_re.find(&to_parse[..]);
-                HumanString::process_letters(
-                   letters_match.unwrap(), to_parse)
-            };
-
-            elems.push(next_token);
+            elems.push(next_elem);
             to_parse = next_to_parse;
         }
 
         HumanString { elems: elems }
     }
 
+    fn process_token(to_parse: &'a str) -> (StringElem<'a>, &str) {
+        let numbers_re = regex!(r"^[0-9]+");
+        let letters_re = regex!(r"^[^0-9]+");
+
+        if let Some(numbers_match) = numbers_re.find(to_parse) {
+            HumanString::process_number(numbers_match, to_parse)
+        } else {
+            let letters_match = letters_re.find(to_parse).unwrap();
+            HumanString::process_letters(letters_match, to_parse)
+        }
+    }
+
     fn process_number(regex_match: (usize, usize),
-                      to_parse: String) -> (StringElem, String) {
+                      to_parse: &'a str) -> (StringElem<'a>, &str) {
         let (_, end_index) = regex_match;
         let prefix_to_num: BigInt = FromStr::from_str(&to_parse[..end_index])
                                     .unwrap();
 
         let next_token = StringElem::Number(prefix_to_num);
-        let to_parse_suffix = to_parse[end_index..].to_string();
+        let to_parse_suffix = &to_parse[end_index..];
 
         (next_token, to_parse_suffix)
     }
 
     fn process_letters(regex_match: (usize, usize),
-                       to_parse: String) -> (StringElem, String) {
+                       to_parse: &'a str) -> (StringElem<'a>, &str) {
         let (_, end_index) = regex_match;
         let prefix = &to_parse[..end_index];
 
-        let next_token = StringElem::Letters(prefix.to_string());
-        let to_parse_suffix = to_parse[end_index..].to_string();
+        let next_token = StringElem::Letters(prefix);
+        let to_parse_suffix = &to_parse[end_index..];
 
         (next_token, to_parse_suffix)
     }
@@ -156,15 +156,15 @@ fn test_makes_numseq() {
 
     let str2 = "abc";
     let hstr2 = HumanString {
-        elems: vec![StringElem::Letters("abc".to_string())]
+        elems: vec![StringElem::Letters("abc")]
     };
     assert_eq!(HumanString::from_str(str2), hstr2);
 
     let str3 = "abc123xyz456";
     let hstr3 = HumanString {
-        elems: vec![StringElem::Letters("abc".to_string()),
+        elems: vec![StringElem::Letters("abc"),
                     StringElem::Number(BigInt::from_i32(123).unwrap()),
-                    StringElem::Letters("xyz".to_string()),
+                    StringElem::Letters("xyz"),
                     StringElem::Number(BigInt::from_i32(456).unwrap())]
     };
     assert_eq!(HumanString::from_str(str3), hstr3);
