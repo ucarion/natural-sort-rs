@@ -78,8 +78,8 @@ impl PartialOrd for HumanString {
 impl HumanString {
     /// Constructs a `HumanString` from a `&str`.
     pub fn from_str(string: &str) -> HumanString {
-        let numbers_re = regex!(r"^\p{N}+");
-        let letters_re = regex!(r"^\P{N}+");
+        let numbers_re = regex!(r"^[0-9]+");
+        let letters_re = regex!(r"^[^0-9]+");
 
         let mut elems = Vec::new();
         let mut to_parse = String::from_str(string);
@@ -193,6 +193,11 @@ fn test_compares_numseq() {
     assert_eq!(compare_numseq("1a2", "1b1"), Some(Less));
 
     assert_eq!(compare_numseq("1", "a"), None);
+}
+
+#[test]
+fn test_nonascii_digits() {
+    HumanString::from_str("٩");
 }
 
 #[test]
