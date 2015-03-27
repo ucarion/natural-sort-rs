@@ -1,7 +1,7 @@
 language: rust
 env:
   global:
-    secure: eegm9kzFQ9T3A8HMH1KUbhwC3To7CAVOU4A1H0GFaT4DW+1I8yWPpEo6KqEC5FW4JKRx1H3/edmUIK0lv41Va1Sd8O5JHwQxEOtn6/BXt+2p9zCmJYCG4hlxHR6Euq/kqqWYuT9UauK7XMmqEMP83mWYw6YlnNoWBJ0bCGKlt8Y=
+  - secure: G1SbkK+NZA5130606MHUtoqES8u7iHhHNCMBMxtNP8TcPLRqqKuYKttQOp+Ocew1gxikhJHUeavr1LlOn1YVMDrLUohdxv8jzAP4jzF6ckM+hh2gjWjA75/DIF+ut+/v7n2czgGKM0z/ZN5hZvJnQdEIjQhLg0VdqTZLnWxHF70=
 
 after_success: |
   [ $TRAVIS_BRANCH = master ] &&
