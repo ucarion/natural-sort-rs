@@ -32,7 +32,6 @@
 //! `natural_sort::HumanString::from_str`.
 
 #![feature(plugin)]
-#![cfg(test)] #![feature(core)]
 
 #![plugin(regex_macros)]
 extern crate regex;
