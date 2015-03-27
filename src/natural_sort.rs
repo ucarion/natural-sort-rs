@@ -3,6 +3,8 @@ use std::cmp::Ordering::*;
 use std::str::FromStr;
 use num::bigint::BigInt;
 
+#[cfg(test)] use std::num::FromPrimitive;
+
 #[derive(Debug, PartialEq, Eq)]
 enum StringElem {
     Letters(String),
@@ -149,7 +151,7 @@ pub fn natural_sort(strs: &mut [&str]) {
 #[test]
 fn test_makes_numseq() {
     let str1 = "123";
-    let hstr1 = HumanString { elems: vec![StringElem::Number(123)] };
+    let hstr1 = HumanString { elems: vec![StringElem::Number(BigInt::from_i32(123).unwrap())] };
     assert_eq!(HumanString::from_str(str1), hstr1);
 
     let str2 = "abc";
@@ -161,9 +163,9 @@ fn test_makes_numseq() {
     let str3 = "abc123xyz456";
     let hstr3 = HumanString {
         elems: vec![StringElem::Letters("abc".to_string()),
-                    StringElem::Number(123),
+                    StringElem::Number(BigInt::from_i32(123).unwrap()),
                     StringElem::Letters("xyz".to_string()),
-                    StringElem::Number(456)]
+                    StringElem::Number(BigInt::from_i32(456).unwrap())]
     };
     assert_eq!(HumanString::from_str(str3), hstr3);
 }
