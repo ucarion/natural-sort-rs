@@ -1,11 +1,14 @@
 use std::cmp::Ordering;
 use std::cmp::Ordering::*;
 use std::str::FromStr;
+use num::bigint::BigInt;
+
+#[cfg(test)] use std::num::FromPrimitive;
 
 #[derive(Debug, PartialEq, Eq)]
 enum StringElem {
     Letters(String),
-    Number(i64)
+    Number(BigInt)
 }
 
 /// A `HumanString` is a sort of string-like object that can be compared in a
@@ -45,7 +48,7 @@ impl PartialOrd for HumanString {
         let pairs = self.elems.iter().zip(other.elems.iter());
         let compares = pairs.map(|pair|
             match pair {
-                (&StringElem::Number(a), &StringElem::Number(b)) => {
+                (&StringElem::Number(ref a), &StringElem::Number(ref b)) => {
                     a.partial_cmp(&b)
                 },
 
@@ -103,7 +106,7 @@ impl HumanString {
     fn process_number(regex_match: (usize, usize),
                       to_parse: String) -> (StringElem, String) {
         let (_, end_index) = regex_match;
-        let prefix_to_num: i64 = FromStr::from_str(&to_parse[..end_index])
+        let prefix_to_num: BigInt = FromStr::from_str(&to_parse[..end_index])
                                     .unwrap();
 
         let next_token = StringElem::Number(prefix_to_num);
@@ -148,7 +151,7 @@ pub fn natural_sort(strs: &mut [&str]) {
 #[test]
 fn test_makes_numseq() {
     let str1 = "123";
-    let hstr1 = HumanString { elems: vec![StringElem::Number(123)] };
+    let hstr1 = HumanString { elems: vec![StringElem::Number(BigInt::from_i32(123).unwrap())] };
     assert_eq!(HumanString::from_str(str1), hstr1);
 
     let str2 = "abc";
@@ -160,9 +163,9 @@ fn test_makes_numseq() {
     let str3 = "abc123xyz456";
     let hstr3 = HumanString {
         elems: vec![StringElem::Letters("abc".to_string()),
-                    StringElem::Number(123),
+                    StringElem::Number(BigInt::from_i32(123).unwrap()),
                     StringElem::Letters("xyz".to_string()),
-                    StringElem::Number(456)]
+                    StringElem::Number(BigInt::from_i32(456).unwrap())]
     };
     assert_eq!(HumanString::from_str(str3), hstr3);
 }
